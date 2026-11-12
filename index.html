@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="DashProfit" />
+  <meta name="theme-color" content="#0b0d12" />
+  <title>DashProfit — DoorDash Order Analyzer</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/svg+xml" href="icon.svg" />
+  <link rel="apple-touch-icon" href="icon.svg" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="app-header">
+      <div class="brand">
+        <span class="brand-dot" aria-hidden="true"></span>
+        <div>
+          <h1>DashProfit</h1>
+          <p class="subtitle" id="header-subtitle">Live Offer Evaluator</p>
+        </div>
+      </div>
+      <button type="button" class="ghost-btn" id="quick-reset-btn" aria-label="Reset current offer">
+        Reset
+      </button>
+    </header>
+
+    <main class="app-content">
+      <!-- TAB 1: LIVE OFFER EVALUATOR -->
+      <section id="tab-evaluate" class="tab-panel active" aria-labelledby="nav-evaluate">
+        <!-- Verdict Banner -->
+        <div id="verdict-card" class="verdict-card verdict-neutral" role="status" aria-live="polite">
+          <div class="verdict-top">
+            <div>
+              <span class="verdict-badge" id="verdict-badge">ENTER OFFER</span>
+              <h2 class="verdict-title" id="verdict-title">Ready to analyze</h2>
+            </div>
+            <div class="score-ring" id="score-ring">
+              <span class="score-value" id="score-value">--</span>
+              <span class="score-label">SCORE</span>
+            </div>
+          </div>
+          <p class="verdict-reason" id="verdict-reason">
+            Enter payout, miles, and estimated time to see true net profit and hourly rate.
+          </p>
+
+          <div class="metrics-grid">
+            <div class="metric-tile">
+              <span class="metric-label">Net $/Hr</span>
+              <strong class="metric-value" id="metric-net-hr">--</strong>
+              <span class="metric-sub" id="metric-gross-hr">Gross: --</span>
+            </div>
+            <div class="metric-tile">
+              <span class="metric-label">Eff. $/Mi</span>
+              <strong class="metric-value" id="metric-eff-mi">--</strong>
+              <span class="metric-sub" id="metric-gross-mi">Shown: --</span>
+            </div>
+            <div class="metric-tile">
+              <span class="metric-label">Net Profit</span>
+              <strong class="metric-value" id="metric-net-profit">--</strong>
+              <span class="metric-sub" id="metric-car-cost">Cost: --</span>
+            </div>
+            <div class="metric-tile">
+              <span class="metric-label">Tax Shield</span>
+              <strong class="metric-value" id="metric-tax-deduction">--</strong>
+              <span class="metric-sub" id="metric-eff-miles">Eff. mi: --</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fast Input Form -->
+        <form id="offer-form" class="card input-card" autocomplete="off">
+          <button type="button" id="btn-voice" class="voice-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span id="voice-btn-label">Speak Offer (e.g. "$13.50, 4.2 mi, 21 min")</span>
+          </button>
+          <p id="voice-transcript" class="voice-transcript" hidden></p>
+
+          <!-- One-tap Example Offers -->
+          <div class="chip-row" aria-label="Example offers">
+            <span class="chip-label">Examples:</span>
+            <button type="button" class="chip example-chip" data-example="chipotle">Chipotle $13.50</button>
+            <button type="button" class="chip example-chip" data-example="outback">Outback $12</button>
+            <button type="button" class="chip example-chip" data-example="popeyes">Popeyes $4.50</button>
+            <button type="button" class="chip example-chip" data-example="target">Target $19.25</button>
+          </div>
+
+          <div class="input-row-3">
+            <div class="field">
+              <label for="input-payout">Payout ($)</label>
+              <div class="input-wrap">
+                <span class="prefix">$</span>
+                <input id="input-payout" type="number" inputmode="decimal" step="0.01" min="0" placeholder="11.50" />
+              </div>
+            </div>
+            <div class="field">
+              <label for="input-miles">Miles</label>
+              <div class="input-wrap">
+                <input id="input-miles" type="number" inputmode="decimal" step="0.1" min="0" placeholder="4.2" />
+                <span class="suffix">mi</span>
+              </div>
+            </div>
+            <div class="field">
+              <label for="input-minutes">Est. Time</label>
+              <div class="input-wrap">
+                <input id="input-minutes" type="number" inputmode="numeric" step="1" min="1" placeholder="22" />
+                <span class="suffix">m</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Time Presets -->
+          <div class="chip-row" aria-label="Quick time presets">
+            <span class="chip-label">Time:</span>
+            <button type="button" class="chip" data-time="12">12m</button>
+            <button type="button" class="chip" data-time="18">18m</button>
+            <button type="button" class="chip" data-time="25">25m</button>
+            <button type="button" class="chip" data-time="35">35m</button>
+            <button type="button" class="chip" data-time="45">45m</button>
+          </div>
+
+          <!-- Return / Zone Deadhead -->
+          <div class="control-group">
+            <div class="control-header">
+              <label>Return / Zone Deadhead</label>
+              <span class="hint-text" id="deadhead-hint">Ends in zone (1.0x mi)</span>
+            </div>
+            <div class="segmented" role="group" aria-label="Return distance multiplier">
+              <button type="button" class="seg-btn active" data-deadhead="1">In Zone</button>
+              <button type="button" class="seg-btn" data-deadhead="1.5">Edge (+50%)</button>
+              <button type="button" class="seg-btn" data-deadhead="2">Round Trip</button>
+            </div>
+          </div>
+
+          <!-- Restaurant Wait Risk & Order Type -->
+          <div class="two-col-controls">
+            <div class="control-group">
+              <label>Wait Risk</label>
+              <div class="segmented" role="group" aria-label="Restaurant wait risk">
+                <button type="button" class="seg-btn active" data-wait="0">Fast</button>
+                <button type="button" class="seg-btn" data-wait="5">+5m</button>
+                <button type="button" class="seg-btn" data-wait="10">+10m</button>
+              </div>
+            </div>
+            <div class="control-group">
+              <label>Order Type</label>
+              <div class="segmented" role="group" aria-label="Order type">
+                <button type="button" class="seg-btn active" data-type="food">Food</button>
+                <button type="button" class="seg-btn" data-type="shop">Shop</button>
+                <button type="button" class="seg-btn" data-type="stack">Stack</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Optional Merchant Name -->
+          <div class="field">
+            <label for="input-merchant">Restaurant / Store (optional)</label>
+            <input id="input-merchant" class="text-input" type="text" placeholder="e.g., Chipotle, Target, Chick-fil-A" />
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="action-row">
+            <button type="button" id="btn-log-pass" class="btn btn-secondary" disabled>
+              Log Pass
+            </button>
+            <button type="button" id="btn-log-take" class="btn btn-primary" disabled>
+              Log Taken
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- TAB 2: INSIGHTS & HISTORY -->
+      <section id="tab-insights" class="tab-panel" aria-labelledby="nav-insights">
+        <div class="card">
+          <div class="section-head">
+            <h2>Performance Summary</h2>
+            <div class="inline-actions">
+              <button type="button" id="btn-sample-data" class="mini-btn">Load Sample</button>
+              <button type="button" id="btn-export-csv" class="mini-btn">Export CSV</button>
+            </div>
+          </div>
+          <div class="kpi-grid" id="insights-kpis">
+            <div class="kpi-box">
+              <span class="kpi-label">True Net $/Hr</span>
+              <strong class="kpi-val" id="kpi-net-hr">$0.00</strong>
+            </div>
+            <div class="kpi-box">
+              <span class="kpi-label">Total Net Profit</span>
+              <strong class="kpi-val" id="kpi-total-net">$0.00</strong>
+            </div>
+            <div class="kpi-box">
+              <span class="kpi-label">Avg $/Mile</span>
+              <strong class="kpi-val" id="kpi-avg-mi">$0.00</strong>
+            </div>
+            <div class="kpi-box">
+              <span class="kpi-label">Accept Rate</span>
+              <strong class="kpi-val" id="kpi-accept-rate">0%</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Most Profitable Order Patterns</h2>
+          <p class="muted-small">Based on your logged taken orders, ranked by true net $/hr.</p>
+          <div id="patterns-list" class="patterns-list">
+            <p class="empty-state">Log at least 2 taken orders (or tap "Load Sample") to see which order types and distances earn you the most.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-head">
+            <h2>Order Log</h2>
+            <button type="button" id="btn-clear-history" class="mini-btn danger-text">Clear All</button>
+          </div>
+          <div id="history-list" class="history-list">
+            <p class="empty-state">No orders logged yet.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: RULES & VEHICLE SETTINGS -->
+      <section id="tab-settings" class="tab-panel" aria-labelledby="nav-settings">
+        <div class="card">
+          <h2>Decision Rules (Take vs. Pass)</h2>
+          <p class="muted-small">Offers meeting both Net $/Hr and Eff. $/Mi minimums score as STRONG TAKE.</p>
+          <div class="settings-grid">
+            <div class="field">
+              <label for="set-min-hr">Target Net $/Hr ($)</label>
+              <input id="set-min-hr" type="number" inputmode="decimal" step="0.5" min="5" />
+            </div>
+            <div class="field">
+              <label for="set-min-mi">Min Eff. $/Mile ($)</label>
+              <input id="set-min-mi" type="number" inputmode="decimal" step="0.1" min="0.5" />
+            </div>
+            <div class="field">
+              <label for="set-min-payout">Min Order Payout ($)</label>
+              <input id="set-min-payout" type="number" inputmode="decimal" step="0.5" min="0" />
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Vehicle & Expense Model</h2>
+          <div class="settings-grid">
+            <div class="field">
+              <label for="set-mpg">Vehicle MPG</label>
+              <input id="set-mpg" type="number" inputmode="decimal" step="1" min="5" />
+            </div>
+            <div class="field">
+              <label for="set-gas">Gas Price ($/gal)</label>
+              <input id="set-gas" type="number" inputmode="decimal" step="0.05" min="1" />
+            </div>
+            <div class="field">
+              <label for="set-wear">Wear & Maint. ($/mi)</label>
+              <input id="set-wear" type="number" inputmode="decimal" step="0.01" min="0" />
+            </div>
+            <div class="field">
+              <label for="set-irs">IRS Deduction ($/mi)</label>
+              <input id="set-irs" type="number" inputmode="decimal" step="0.01" min="0" />
+            </div>
+          </div>
+          <div class="cost-summary" id="settings-cost-summary">
+            Estimated vehicle cost: <strong>$0.25/mi</strong>
+          </div>
+        </div>
+
+        <div class="card install-card">
+          <h2>Install on iPhone Home Screen</h2>
+          <ol class="install-steps">
+            <li>Open this page in <strong>Safari</strong> on your iPhone.</li>
+            <li>Tap the <strong>Share</strong> icon (square with upward arrow).</li>
+            <li>Scroll down and tap <strong>Add to Home Screen</strong>.</li>
+            <li>Launch <strong>DashProfit</strong> from your Home Screen — works offline!</li>
+          </ol>
+        </div>
+      </section>
+    </main>
+
+    <!-- Bottom iOS-style Tab Bar -->
+    <nav class="tab-bar" aria-label="Main navigation">
+      <button type="button" id="nav-evaluate" class="tab-btn active" data-tab="evaluate">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>Evaluate</span>
+      </button>
+      <button type="button" id="nav-insights" class="tab-btn" data-tab="insights">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M3 3v18h18M7 14l4-4 4 3 5-6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>Insights</span>
+      </button>
+      <button type="button" id="nav-settings" class="tab-btn" data-tab="settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>Rules & Car</span>
+      </button>
+    </nav>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
