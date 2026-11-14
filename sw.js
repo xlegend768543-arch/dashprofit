@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dashprofit-v3';
+const CACHE_NAME = 'dashprofit-v5';
 const ASSETS = [
   './',
   './index.html',
@@ -7,7 +7,13 @@ const ASSETS = [
   './icon.svg',
   './js/app.js',
   './js/calculator.js',
-  './js/storage.js'
+  './js/storage.js',
+  './js/voice-parser.js',
+  './js/ui/toast.js',
+  './js/ui/tracker.js',
+  './js/ui/evaluate.js',
+  './js/ui/insights.js',
+  './js/ui/settings.js',
 ];
 
 self.addEventListener('install', (event) => {
@@ -26,8 +32,18 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
+// Network-first for HTML/JS/CSS so updates ship automatically without manual cache version bumps
 self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') return;
   event.respondWith(
-    caches.match(event.request).then((cached) => cached || fetch(event.request))
+    fetch(event.request)
+      .then((res) => {
+        if (res && res.ok) {
+          const clone = res.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone)).catch(() => {});
+        }
+        return res;
+      })
+      .catch(() => caches.match(event.request))
   );
 });

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="DashProfit" />
@@ -31,6 +31,101 @@
     <main class="app-content">
       <!-- TAB 1: LIVE OFFER EVALUATOR -->
       <section id="tab-evaluate" class="tab-panel active" aria-labelledby="nav-evaluate">
+        <!-- Daily Mileage & Profit Counter -->
+        <div id="daily-tracker-card" class="card daily-card">
+          <div class="daily-top">
+            <div class="daily-title-wrap">
+              <span class="daily-eyebrow" id="daily-gps-status">Today's Mileage &amp; Profit</span>
+              <span class="daily-sub" id="daily-breakdown-line">Using trip estimates • Trips: 0.0 • GPS: 0.0 • Manual: 0.0 mi</span>
+            </div>
+            <div class="daily-top-actions">
+              <button type="button" id="btn-shift-toggle" class="shift-btn" aria-pressed="false" aria-label="Toggle shift timer">
+                Start Shift
+              </button>
+              <button type="button" id="btn-gps-toggle" class="gps-btn" aria-pressed="false" aria-label="Toggle live GPS mileage tracking">
+                Start GPS
+              </button>
+            </div>
+          </div>
+
+          <div class="daily-kpis">
+            <div class="daily-kpi">
+              <span class="daily-kpi-label">Miles Today</span>
+              <strong class="daily-kpi-val" id="daily-total-miles">0.0 mi</strong>
+              <span class="daily-kpi-sub" id="daily-miles-source-sub">Trip est.</span>
+            </div>
+            <div class="daily-kpi">
+              <span class="daily-kpi-label">Tax Write-Off</span>
+              <strong class="daily-kpi-val accent-text" id="daily-tax-writeoff">$0.00</strong>
+              <span class="daily-kpi-sub" id="daily-tax-setaside">Set aside: $0.00</span>
+            </div>
+            <div class="daily-kpi">
+              <span class="daily-kpi-label">Net Profit (cash)</span>
+              <strong class="daily-kpi-val" id="daily-net-profit">$0.00</strong>
+              <span class="daily-kpi-sub" id="daily-net-hr">$0.00/hr</span>
+            </div>
+          </div>
+
+          <div id="daily-goal-wrap" class="goal-wrap">
+            <div class="goal-head">
+              <span class="goal-label" id="daily-goal-label">Daily Goal ($150)</span>
+              <span class="goal-status" id="daily-goal-status">$150.00 to go</span>
+            </div>
+            <div class="pattern-bar-bg" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="daily-goal-progressbar">
+              <div class="pattern-bar-fill" id="daily-goal-fill" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <div class="quick-mile-row" role="group" aria-label="Quick add miles">
+            <span class="chip-label">Add mi:</span>
+            <button type="button" class="chip quick-mile-btn" data-add-miles="0.5">+0.5</button>
+            <button type="button" class="chip quick-mile-btn" data-add-miles="1">+1</button>
+            <button type="button" class="chip quick-mile-btn" data-add-miles="5">+5</button>
+            <button type="button" id="btn-undo-mile" class="chip" disabled aria-label="Undo last manual mileage entry">Undo</button>
+            <button type="button" id="btn-use-trip" class="chip chip-action" hidden aria-label="Use GPS trip miles in offer form">Use Trip</button>
+            <button type="button" id="btn-toggle-odo" class="chip chip-action" aria-expanded="false" aria-controls="daily-manual-drawer">Odo / Log</button>
+          </div>
+
+          <div id="daily-manual-drawer" class="daily-drawer" hidden>
+            <div class="drawer-row">
+              <div class="field">
+                <label for="input-custom-miles">Custom Miles</label>
+                <div class="input-wrap">
+                  <input id="input-custom-miles" type="number" inputmode="decimal" step="0.1" min="0" placeholder="2.5" />
+                  <span class="suffix">mi</span>
+                </div>
+              </div>
+              <button type="button" id="btn-add-custom-miles" class="mini-btn drawer-btn">Add</button>
+            </div>
+            <div class="drawer-row">
+              <div class="field">
+                <label for="input-odo-start">Start Odo</label>
+                <input id="input-odo-start" class="text-input" type="number" inputmode="decimal" step="0.1" min="0" placeholder="45120" />
+              </div>
+              <div class="field">
+                <label for="input-odo-end">End Odo</label>
+                <input id="input-odo-end" class="text-input" type="number" inputmode="decimal" step="0.1" min="0" placeholder="45148" />
+              </div>
+              <button type="button" id="btn-apply-odo" class="mini-btn drawer-btn">Apply</button>
+            </div>
+
+            <div id="manual-entries-list" class="manual-entries-list" aria-label="Manual mileage entries"></div>
+
+            <div class="drawer-footer">
+              <span class="muted-small" id="daily-irs-note">IRS rate: $0.70/mi</span>
+              <button type="button" id="btn-reset-daily-miles" class="mini-btn danger-text">Reset Manual/GPS</button>
+            </div>
+            <p class="tax-honesty-note">
+              Standard mileage already covers gas &amp; wear — don't also deduct them. Estimate only, not tax advice. Verify the current IRS rate at irs.gov.
+            </p>
+          </div>
+
+          <p class="muted-small gps-browser-note" id="gps-browser-note">
+            Browser GPS tracks only while this page is open and the screen is on. Use the iOS app for background tracking.
+          </p>
+          <p id="gps-error-msg" class="gps-error" role="alert" hidden></p>
+        </div>
+
         <!-- Verdict Banner -->
         <div id="verdict-card" class="verdict-card verdict-neutral" role="status" aria-live="polite">
           <div class="verdict-top">
@@ -64,7 +159,7 @@
               <span class="metric-sub" id="metric-car-cost">Cost: --</span>
             </div>
             <div class="metric-tile">
-              <span class="metric-label">Tax Shield</span>
+              <span class="metric-label">Tax Write-Off</span>
               <strong class="metric-value" id="metric-tax-deduction">--</strong>
               <span class="metric-sub" id="metric-eff-miles">Eff. mi: --</span>
             </div>
@@ -180,10 +275,102 @@
       <section id="tab-insights" class="tab-panel" aria-labelledby="nav-insights">
         <div class="card">
           <div class="section-head">
-            <h2>Performance Summary</h2>
+            <h2>Mileage, Profit &amp; Taxes</h2>
+            <span class="muted-small" id="insights-irs-badge">@ $0.70/mi</span>
+          </div>
+
+          <div class="segmented period-seg" role="group" aria-label="Summary period">
+            <button type="button" class="seg-btn active" data-period="today">Today</button>
+            <button type="button" class="seg-btn" data-period="week">Week</button>
+            <button type="button" class="seg-btn" data-period="month">Month</button>
+            <button type="button" class="seg-btn" data-period="ytd">YTD</button>
+          </div>
+
+          <div class="kpi-grid" style="margin-top: 10px;">
+            <div class="kpi-box">
+              <span class="kpi-label">Business Miles</span>
+              <strong class="kpi-val" id="insights-today-miles">0.0 mi</strong>
+            </div>
+            <div class="kpi-box">
+              <span class="kpi-label">Tax Write-Off</span>
+              <strong class="kpi-val accent-text" id="insights-today-tax">$0.00</strong>
+            </div>
+            <div class="kpi-box">
+              <span class="kpi-label">Net Profit (cash)</span>
+              <strong class="kpi-val" id="insights-today-net">$0.00</strong>
+            </div>
+            <div class="kpi-box">
+              <span class="kpi-label">Net $/Hr</span>
+              <strong class="kpi-val" id="insights-today-net-hr">$0.00</strong>
+            </div>
+            <div class="kpi-box">
+              <span class="kpi-label">Est. Tax Set-Aside</span>
+              <strong class="kpi-val warn-text" id="insights-today-setaside">$0.00</strong>
+            </div>
+            <div class="kpi-box">
+              <span class="kpi-label">Gross / Expenses</span>
+              <strong class="kpi-val" id="insights-today-gross-cost">$0 / $0</strong>
+            </div>
+          </div>
+
+          <p class="muted-small" id="insights-today-breakdown" style="margin: 8px 0 0;">
+            Using trip estimates • Trips: 0.0 mi • GPS: 0.0 mi • Manual: 0.0 mi
+          </p>
+          <p class="tax-honesty-note" style="margin-top: 6px;">
+            Estimated tax to set aside (not tax advice). Standard mileage covers gas &amp; wear — don't also deduct them. Verify current IRS rate at irs.gov.
+          </p>
+
+          <div class="export-row">
+            <button type="button" id="btn-export-mileage-csv" class="mini-btn">Mileage CSV</button>
+            <button type="button" id="btn-export-expenses-csv" class="mini-btn">Expenses CSV</button>
+            <button type="button" id="btn-export-csv" class="mini-btn">Orders CSV</button>
+          </div>
+        </div>
+
+        <!-- Other Deductible Expenses -->
+        <div class="card">
+          <div class="section-head">
+            <h2>Other Deductible Expenses</h2>
+            <button type="button" id="btn-clear-expenses" class="mini-btn danger-text">Clear</button>
+          </div>
+          <p class="muted-small">Tolls, parking, hot bags &amp; phone mounts can be deducted on top of standard mileage.</p>
+          <div class="expense-form-grid">
+            <div class="field">
+              <label for="input-expense-amount">Amount ($)</label>
+              <div class="input-wrap">
+                <span class="prefix">$</span>
+                <input id="input-expense-amount" type="number" inputmode="decimal" step="0.01" min="0" placeholder="4.50" />
+              </div>
+            </div>
+            <div class="field">
+              <label for="input-expense-category">Category</label>
+              <select id="input-expense-category" class="text-input">
+                <option value="Toll">Toll</option>
+                <option value="Parking">Parking</option>
+                <option value="Phone/Mount">Phone/Mount</option>
+                <option value="Hot Bag/Supplies">Hot Bag/Supplies</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="drawer-row" style="margin-top: 8px;">
+            <div class="field">
+              <label for="input-expense-note">Note (optional)</label>
+              <input id="input-expense-note" class="text-input" type="text" placeholder="e.g., Downtown parking meter" />
+            </div>
+            <button type="button" id="btn-add-expense" class="mini-btn drawer-btn">Add</button>
+          </div>
+          <div id="expenses-list" class="history-list" style="margin-top: 10px;">
+            <p class="empty-state">No extra expenses logged yet.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-head">
+            <h2>All-Time Performance</h2>
             <div class="inline-actions">
               <button type="button" id="btn-sample-data" class="mini-btn">Load Sample</button>
-              <button type="button" id="btn-export-csv" class="mini-btn">Export CSV</button>
+              <button type="button" id="btn-remove-samples" class="mini-btn">Remove Samples</button>
             </div>
           </div>
           <div class="kpi-grid" id="insights-kpis">
@@ -208,9 +395,9 @@
 
         <div class="card">
           <h2>Most Profitable Order Patterns</h2>
-          <p class="muted-small">Based on your logged taken orders, ranked by true net $/hr.</p>
+          <p class="muted-small">Based on real (non-sample) taken orders, ranked by true net $/hr.</p>
           <div id="patterns-list" class="patterns-list">
-            <p class="empty-state">Log at least 2 taken orders (or tap "Load Sample") to see which order types and distances earn you the most.</p>
+            <p class="empty-state">Log at least 2 real taken orders to see which order types and distances earn you the most.</p>
           </div>
         </div>
 
@@ -228,47 +415,58 @@
       <!-- TAB 3: RULES & VEHICLE SETTINGS -->
       <section id="tab-settings" class="tab-panel" aria-labelledby="nav-settings">
         <div class="card">
-          <h2>Decision Rules (Take vs. Pass)</h2>
+          <h2>Decision Rules &amp; Goals</h2>
           <p class="muted-small">Offers meeting both Net $/Hr and Eff. $/Mi minimums score as STRONG TAKE.</p>
           <div class="settings-grid">
             <div class="field">
               <label for="set-min-hr">Target Net $/Hr ($)</label>
-              <input id="set-min-hr" type="number" inputmode="decimal" step="0.5" min="5" />
+              <input id="set-min-hr" type="number" inputmode="decimal" step="0.5" min="0" />
             </div>
             <div class="field">
               <label for="set-min-mi">Min Eff. $/Mile ($)</label>
-              <input id="set-min-mi" type="number" inputmode="decimal" step="0.1" min="0.5" />
+              <input id="set-min-mi" type="number" inputmode="decimal" step="0.1" min="0" />
             </div>
             <div class="field">
               <label for="set-min-payout">Min Order Payout ($)</label>
               <input id="set-min-payout" type="number" inputmode="decimal" step="0.5" min="0" />
             </div>
+            <div class="field">
+              <label for="set-daily-goal">Daily Net Goal ($)</label>
+              <input id="set-daily-goal" type="number" inputmode="decimal" step="5" min="0" />
+            </div>
           </div>
         </div>
 
         <div class="card">
-          <h2>Vehicle & Expense Model</h2>
+          <h2>Vehicle &amp; Tax Settings</h2>
           <div class="settings-grid">
             <div class="field">
               <label for="set-mpg">Vehicle MPG</label>
-              <input id="set-mpg" type="number" inputmode="decimal" step="1" min="5" />
+              <input id="set-mpg" type="number" inputmode="decimal" step="1" min="1" />
             </div>
             <div class="field">
               <label for="set-gas">Gas Price ($/gal)</label>
-              <input id="set-gas" type="number" inputmode="decimal" step="0.05" min="1" />
+              <input id="set-gas" type="number" inputmode="decimal" step="0.05" min="0" />
             </div>
             <div class="field">
-              <label for="set-wear">Wear & Maint. ($/mi)</label>
+              <label for="set-wear">Wear &amp; Maint. ($/mi)</label>
               <input id="set-wear" type="number" inputmode="decimal" step="0.01" min="0" />
             </div>
             <div class="field">
-              <label for="set-irs">IRS Deduction ($/mi)</label>
+              <label for="set-irs">IRS Mileage Rate ($/mi)</label>
               <input id="set-irs" type="number" inputmode="decimal" step="0.01" min="0" />
+            </div>
+            <div class="field">
+              <label for="set-tax-pct">Income Tax Set-Aside (%)</label>
+              <input id="set-tax-pct" type="number" inputmode="decimal" step="1" min="0" max="50" />
             </div>
           </div>
           <div class="cost-summary" id="settings-cost-summary">
             Estimated vehicle cost: <strong>$0.25/mi</strong>
           </div>
+          <p class="tax-honesty-note" style="margin-top: 8px;">
+            Set Daily Net Goal to 0 to hide the goal bar. Verify the current standard mileage rate at irs.gov.
+          </p>
         </div>
 
         <div class="card install-card">
@@ -302,7 +500,7 @@
           <circle cx="12" cy="12" r="3"/>
           <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-        <span>Rules & Car</span>
+        <span>Rules &amp; Car</span>
       </button>
     </nav>
   </div>
